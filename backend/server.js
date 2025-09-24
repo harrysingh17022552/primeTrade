@@ -15,6 +15,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 //app
+app.use("/", require("./routes/Auth"));
 
 app.get("/", (req, res) => {
   res.send("Welcome to Backend Server");

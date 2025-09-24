@@ -1,5 +1,9 @@
-import Converter from "./Converter";
+import Home from "./Home";
 function App() {
-  return <article>App</article>;
+  return (
+    <main>
+      <Home />
+    </main>
+  );
 }
 export default App;
