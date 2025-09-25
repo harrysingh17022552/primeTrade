@@ -11,6 +11,7 @@ export default function Home() {
   const addRef = useRef(null);
   const navigate = useNavigate();
   const [updateItem, setUpdateItem] = useState({ status: false, item: null });
+  const [onUpdateDB, setOnUpdateDB] = useState(false);
   const [newNote, setNewNote] = useState({
     status: false,
     item: { title: "", body: "" },
@@ -135,7 +136,7 @@ export default function Home() {
         ...prev,
         {
           id:
-            prev.length > 0 ? Math.max(...prev.map((item) => item.id)) + 1 : 1,
+            prev.length > 0 ? Math.max(...prev.map((item) => item.id)) + 1 : 1, //this is not simple as it looks, here I am assigning id value according to current data, but it depends on my DB that how it is incrementing id by +1 or by previously item +1. This can cause conflict
           created_at: "just now",
           title: newNote.item.title,
           body: newNote.item.body,
@@ -144,6 +145,7 @@ export default function Home() {
       addRef.current.style.color = "green";
       addRef.current.textContent = data.message;
       e.target.textContent = "Add";
+      setOnUpdateDB(!onUpdateDB);
       setTimeout(() => {
         setNewNote((props) => ({ ...props, status: false }));
       }, 2000);
@@ -155,7 +157,7 @@ export default function Home() {
   };
   useEffect(() => {
     fetchNote();
-  }, []);
+  }, [onUpdateDB]);
   return updateItem.status ? (
     <section className="w-screen h-screen flex justify-center items-center p-4">
       <article className="flex flex-col gap-4 w-full sm:w-[75%] lg:w-1/2">
@@ -218,7 +220,7 @@ export default function Home() {
       </article>
     </section>
   ) : (
-    <section className="flex flex-col items-center justify-center w-screen h-screen overflow-scroll gap-8 noscrollbar">
+    <section className="flex flex-col items-center w-screen h-screen overflow-scroll gap-8 noscrollbar">
       {getNote ? (
         <article className="flex flex-col gap-8 p-2">
           <h1 className="text-center text-3xl text-blue-500">My Note's</h1>
@@ -258,13 +260,15 @@ export default function Home() {
           } w-16 h-16 rounded-full border-4 border-l-violet-500 border-r-green-500 border-b-orange-600 border-t-red-500 animate-[spin_0.3s_linear_infinite]`}
         ></p>
       )}
-      <IoMdAddCircle
-        title="Add Note"
-        className={`text-blue-400 ${
-          newNote.status ? "hidden" : "flex"
-        } text-6xl cursor-pointer transition-all hover:scale-125`}
-        onClick={() => setNewNote((props) => ({ ...props, status: true }))}
-      />
+      <div>
+        <IoMdAddCircle
+          title="Add Note"
+          className={`text-blue-400 ${
+            newNote.status ? "hidden" : "flex"
+          } text-6xl cursor-pointer transition-all hover:scale-125`}
+          onClick={() => setNewNote((props) => ({ ...props, status: true }))}
+        />
+      </div>
       {newNote.status && (
         <article className="relative flex flex-col gap-4">
           <div className="flex flex-col w-full">

@@ -21,15 +21,19 @@ const FetchAllNotes = async (req, res) => {
       try {
         const allUserNotes = await prisma.notes.findMany();
         if (!allUserNotes) {
-          console.log("Failed to fetch Notes");
+          console.log("Failed to fetch Notes by Admin");
           return res.status(400).json({ message: "Failed to fetch Notes" });
         }
-        console.log("Successfully fetched Notes");
+        if (allUserNotes.length === 0) {
+          console.log("Admin : No, Notes Found");
+          return res.status(404).json({ message: "No, Notes Found" });
+        }
+        console.log("Successfully fetched Notes by Admin");
         return res
           .status(200)
           .json({ message: "Successfully fetched Notes", notes: allUserNotes });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from Admin Side: ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
@@ -39,20 +43,20 @@ const FetchAllNotes = async (req, res) => {
           where: { email: validUser.email },
         });
         if (!allNotes) {
-          console.log("Failed to fetch Notes");
+          console.log("Failed to fetch Notes by User");
           return res.status(400).json({ message: "Failed to fetch Notes" });
         }
         if (allNotes.length === 0) {
-          console.log("No, Notes Found");
+          console.log("User : No, Notes Found");
           return res.status(404).json({ message: "No, Notes Found" });
         }
-        console.log("Successfully fetched Notes");
+        console.log("Successfully fetched Notes by User");
         return res.status(200).json({
           message: "Successfully fetched Notes",
           notes: allNotes,
         });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from User Side : ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
@@ -90,6 +94,12 @@ const PostNotes = async (req, res) => {
       if (!postDetails || !email) {
         return res.status(404).json({ message: "Missing Important Data" });
       }
+      if (!userExist) {
+        return res.status(400).json({
+          message:
+            "As per Admin guidelines, you can only create note of existing user's",
+        });
+      }
       try {
         const newNote = {
           email: email,
@@ -101,13 +111,13 @@ const PostNotes = async (req, res) => {
           data: newNote,
         });
         if (!postNote) {
-          console.log("Failed to post Note");
+          console.log("Failed to post Note by Admin");
           return res.status(400).json({ message: "Failed to post Note" });
         }
-        console.log("Successfully posted Notes");
+        console.log("Successfully posted Notes by Admin");
         return res.status(200).json({ message: "Successfully posted Notes" });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from Admin Side: ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
@@ -127,13 +137,13 @@ const PostNotes = async (req, res) => {
           data: newNote,
         });
         if (!postNote) {
-          console.log("Failed to post Note");
+          console.log("Failed to post Note by User");
           return res.status(400).json({ message: "Failed to post Note" });
         }
-        console.log("Successfully posted Notes");
+        console.log("Successfully posted Notes by User");
         return res.status(200).json({ message: "Successfully posted Notes" });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from User Side : ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
@@ -167,8 +177,17 @@ const UpdateNotes = async (req, res) => {
     }
     const ifAdmin = async () => {
       const { postDetails, email, id } = req.body;
-      if (!postDetails || !email || id) {
+      if (!postDetails || !email || !id) {
         return res.status(404).json({ message: "Missing Important Data" });
+      }
+      const userExist = await prisma.users.findUnique({
+        where: { email: email },
+      });
+      if (!userExist) {
+        return res.status(400).json({
+          message:
+            "As per Admin guidelines, you can only update note of existing user's",
+        });
       }
       try {
         const updatedNote = {
@@ -181,13 +200,13 @@ const UpdateNotes = async (req, res) => {
           data: updatedNote,
         });
         if (!updateNote) {
-          console.log("Failed to update Note");
+          console.log("Failed to update Note by Admin");
           return res.status(400).json({ message: "Failed to update Note" });
         }
-        console.log("Successfully updated Notes");
+        console.log("Successfully updated Notes by Admin");
         return res.status(200).json({ message: "Successfully updated Notes" });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from Admin Side: ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
@@ -207,13 +226,13 @@ const UpdateNotes = async (req, res) => {
           data: updatedNote,
         });
         if (!updateNote) {
-          console.log("Failed to update Note");
+          console.log("Failed to update Note by User");
           return res.status(400).json({ message: "Failed to update Note" });
         }
-        console.log("Successfully updated Notes");
+        console.log("Successfully updated Notes by User");
         return res.status(200).json({ message: "Successfully updated Notes" });
       } catch (error) {
-        console.log("DB Error : ", error);
+        console.log("DB Error from User Side: ", error);
         return res.status(503).json({ message: `DB Error : ${error.message}` });
       }
     };
