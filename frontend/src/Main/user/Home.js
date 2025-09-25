@@ -221,6 +221,7 @@ export default function Home() {
     <section className="flex flex-col items-center justify-center w-screen h-screen overflow-scroll gap-8 noscrollbar">
       {getNote ? (
         <article className="flex flex-col gap-8 p-2">
+          <h1 className="text-center text-3xl text-blue-500">My Note's</h1>
           {getNote.map((note, index) => (
             <article
               key={`note/${index}`}
@@ -316,7 +317,9 @@ export default function Home() {
           />
         </article>
       )}
-      <p ref={errorRef} className="text-red-600 text-2xl font-bold">{getNote?.length===0 ? 'No Notes Found' : ''}</p>
+      <p ref={errorRef} className="text-red-600 text-2xl font-bold">
+        {getNote?.length === 0 ? "No Notes Found" : ""}
+      </p>
     </section>
   );
 }
