@@ -8,7 +8,7 @@ const FetchAllNotes = async (req, res) => {
   }
   try {
     const validUser = await prisma.users.findUnique({
-      where: { reference_token: cookies.jwt },
+      where: { email: req.user },
     });
     if (!validUser) {
       return res.status(401).json({
@@ -81,7 +81,7 @@ const PostNotes = async (req, res) => {
   }
   try {
     const validUser = await prisma.users.findUnique({
-      where: { reference_token: cookies.jwt },
+      where: { email: req.user },
     });
     if (!validUser) {
       return res.status(401).json({
@@ -167,7 +167,7 @@ const UpdateNotes = async (req, res) => {
   }
   try {
     const validUser = await prisma.users.findUnique({
-      where: { reference_token: cookies.jwt },
+      where: { email: req.user },
     });
     if (!validUser) {
       return res.status(401).json({
@@ -256,7 +256,7 @@ const DeleteNotes = async (req, res) => {
   }
   try {
     const validUser = await prisma.users.findUnique({
-      where: { reference_token: cookies.jwt },
+      where: { email: req.user },
     });
     if (!validUser) {
       return res.status(401).json({

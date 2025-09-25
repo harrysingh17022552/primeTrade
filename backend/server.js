@@ -4,6 +4,7 @@ const cors = require("cors");
 const corsOptions = require("./config/cors");
 const cookieParser = require("cookie-parser");
 const credentials = require("./middlewares/credentials");
+const jwtVerifier = require("./middlewares/jwtVerifier");
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 
@@ -16,6 +17,9 @@ app.use(cors(corsOptions));
 
 //app
 app.use("/", require("./routes/Auth"));
+
+//routes that have to pass through JWT verification
+app.use(jwtVerifier);
 app.use("/", require("./routes/Notes"));
 
 app.get("/", (req, res) => {

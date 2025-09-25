@@ -23,10 +23,16 @@ export default function Home() {
     const url = `${process.env.REACT_APP_BACKEND_HOST}/deleteNotes`;
     const response = await fetch(url, {
       method: "DELETE",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${JSON.parse(
+          window.sessionStorage.getItem("AccJWT")
+        )}`,
+      },
       body: JSON.stringify({ id: id }),
       credentials: "include",
     });
+    const data = await response.json();
     if (response.ok) {
       setGetNote((prev) => prev.filter((item) => item.id !== id));
       return;
@@ -36,6 +42,11 @@ export default function Home() {
         navigate("/signin");
       }, 2000);
     }
+    if (response.status === 403 || response.status === 400) {
+      alert(data.message);
+      navigate("/signin");
+      return;
+    }
     e.currentTarget.style.color = "red";
     e.currentTarget.classList.remove("animate-pulse");
   };
@@ -44,7 +55,12 @@ export default function Home() {
     const url = `${process.env.REACT_APP_BACKEND_HOST}/updateNotes`;
     const response = await fetch(url, {
       method: "PUT",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${JSON.parse(
+          window.sessionStorage.getItem("AccJWT")
+        )}`,
+      },
       body: JSON.stringify({
         postDetails: {
           title: updateItem.item.title,
@@ -64,6 +80,11 @@ export default function Home() {
         setTimeout(() => {
           navigate("/signin");
         }, 2000);
+      }
+      if (response.status === 403 || response.status === 400) {
+        alert(data.message);
+        navigate("/signin");
+        return;
       }
       return;
     }
@@ -91,7 +112,12 @@ export default function Home() {
     try {
       const response = await fetch(url, {
         method: "GET",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${JSON.parse(
+            window.sessionStorage.getItem("AccJWT")
+          )}`,
+        },
         credentials: "include",
       });
       const data = await response.json();
@@ -103,6 +129,11 @@ export default function Home() {
           setTimeout(() => {
             navigate("/signin");
           }, 2000);
+        }
+        if (response.status === 403 || response.status === 400) {
+          alert(data.message);
+          navigate("/signin");
+          return;
         }
         return;
       }
@@ -128,7 +159,12 @@ export default function Home() {
       const url = `${process.env.REACT_APP_BACKEND_HOST}/postNotes`;
       const response = await fetch(url, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${JSON.parse(
+            window.sessionStorage.getItem("AccJWT")
+          )}`,
+        },
         body: JSON.stringify({
           postDetails: newNote.item,
           email: newNote.item.email,
@@ -137,6 +173,11 @@ export default function Home() {
       });
       const data = await response.json();
       if (!response.ok) {
+        if (response.status === 403 || response.status === 400) {
+          alert(data.message);
+          navigate("/signin");
+          return;
+        }
         addRef.current.style.color = "red";
         addRef.current.textContent = data.message;
       }

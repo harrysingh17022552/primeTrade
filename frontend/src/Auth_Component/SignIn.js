@@ -49,10 +49,16 @@ export default function SignIn() {
           form.children[1].classList.add("hidden");
           return;
         }
+        window.sessionStorage.setItem(
+          "AccJWT",
+          JSON.stringify(data.accessToken)
+        );
         errorRef.current.style.color = "green";
         errorRef.current.textContent = data.message;
         setTimeout(() => {
-          navigate(`/${data.role}/${data.encryptedEmail}/home`, { replace: true });
+          navigate(`/${data.role}/${data.encryptedEmail}/home`, {
+            replace: true,
+          });
         }, 2000);
       } catch (error) {
         console.log(error.message);
